@@ -1,5 +1,9 @@
+const GOOGLE_API_KEY = "AIzaSyA5MPiWRvthVJ8UTURj0eIm0s4eisFlD-s"
+
 $(document).ready(function(){
     initSlider();
+
+    initList();
 });
 
 
@@ -18,6 +22,7 @@ function initSlider() {
 
 }
 
+<<<<<<< Updated upstream
 var map;
 var event_marker;
 
@@ -50,3 +55,16 @@ function placeMarker(location) {
         event_marker.setPosition(location);
     }
 }
+=======
+function initList(){
+    googleRequest(function(googleResuts){
+        
+    });
+}
+
+
+function googleRequest(cb){
+    var service = new google.maps.places.PlacesService(map);
+    service.nearbySearch(request, callback);
+}
+>>>>>>> Stashed changes

@@ -18,10 +18,35 @@ function initSlider() {
 
 }
 
+var map;
+var event_marker;
+
+var form = {
+    assistants:[],
+    location:{}
+};
+
 function initMap() {
-        var mapDiv = document.getElementById('map');
-        var map = new google.maps.Map(mapDiv, {
-            center: {lat: 44.540, lng: -78.546},
-            zoom: 8
+    var mapDiv = document.getElementById('map');
+    map = new google.maps.Map(mapDiv, {
+        center: {lat: 41.3947687, lng: 2.0785561},
+        zoom: 12
+    });
+
+    google.maps.event.addListener(map, 'click', function(event) {
+       placeMarker(event.latLng);
+       form.location.lat = event.latLng.lat();
+       form.location.lon = event.latLng.lng();
+    });
+}
+
+function placeMarker(location) {
+    if(typeof event_marker == "undefined"){
+        event_marker = new google.maps.Marker({
+            position: location,
+            map: map
         });
-      }
+    } else {
+        event_marker.setPosition(location);
+    }
+}

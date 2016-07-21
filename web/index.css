@@ -53,3 +53,31 @@ nav{
 .cntr {
   transform: translate(-50%, -50%);
 }
+
+.boxedcontainer {
+    padding: 25px;
+}
+
+.boxed {
+  border: 1px solid green ;
+  padding: 0px;
+  width: 100%;
+}
+.boxed div.imatge{
+    padding: 0px;
+
+}
+
+.boxed div img {
+    width: 100%; 
+    height: 100%;
+}
+
+.nameofbuilding {
+    font-weight: bold;
+}
+
+.descriptionofbuilding {
+    font-size: 12px;
+    text-align: justify;
+}

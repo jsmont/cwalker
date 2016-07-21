@@ -59,9 +59,11 @@ nav{
 }
 
 .boxed {
-  border: 1px solid green ;
   padding: 0px;
   width: 100%;
+-webkit-box-shadow: 6px 6px 42px -5px rgba(0,0,0,0.52);
+-moz-box-shadow: 6px 6px 42px -5px rgba(0,0,0,0.52);
+box-shadow: 6px 6px 42px -5px rgba(0,0,0,0.52);
 }
 .boxed div.imatge{
     padding: 0px;
@@ -75,6 +77,7 @@ nav{
 
 .nameofbuilding {
     font-weight: bold;
+    padding-top: 5px;
 }
 
 .descriptionofbuilding {

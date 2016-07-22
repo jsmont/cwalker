@@ -156,7 +156,7 @@ public class PlaceListActivity extends Activity {
                     e.printStackTrace();
                 }
             }
-            urlString.append("&sensor=false&mode=driving&alternatives=true");
+            urlString.append("&sensor=false&mode=walking&alternatives=true");
 
                 urlString.append("&key=AIzaSyA5MPiWRvthVJ8UTURj0eIm0s4eisFlD-s");
 

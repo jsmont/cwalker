@@ -1,0 +1,14 @@
+nav{
+    background-color: #00284d;
+}
+.navbar{
+    margin-bottom: 0px;
+}
+.navbar-brand {
+    font-family: 'Lobster', cursive;
+    font-size: 35px;
+}
+#map{
+    width: 100%;
+    height: 1000px;
+}

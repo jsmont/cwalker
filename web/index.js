@@ -122,7 +122,7 @@ function fixWidth(box){
 
 function setBoxEvents(box){
 box.click(function(){
-    box.toggleClass("selected");
+    $(this).toggleClass("selected");
 }); 
 
 };

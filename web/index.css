@@ -63,7 +63,8 @@ nav{
 }
 
 .boxed {
-  padding: 0px;
+    overflow: hidden;
+    padding: 0px;
   width: 100%;
 -webkit-box-shadow: 6px 6px 42px -5px rgba(0,0,0,0.52);
 -moz-box-shadow: 6px 6px 42px -5px rgba(0,0,0,0.52);
@@ -89,10 +90,13 @@ box-shadow: 6px 6px 42px -5px rgba(0,0,0,0.52);
     text-align: justify;
 }
 
-.boxcontainer.selected {
-    padding: 23px;
+.boxedcontainer.selected {
+    padding-left: 23px;
+    padding-right: 23px;
+    padding-top: 25px;
+    padding-bottom: 25px;
 }
 
-.boxcontainer.selected .boxed {
+.boxedcontainer.selected .boxed {
     border: 2px solid blue;
 }

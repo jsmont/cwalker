@@ -86,20 +86,30 @@ function googleRequest(cb){
 function updateList(results){
     results.map(createBox).map(function(box){
         $("#list").append(box);
-    });
+        return box;
+    }).map(fixWidth);
 }
 
 function createBox(elemData){
 
     var box = $("#box_template .boxedcontainer").first().clone();
-
     box.find(".nameofbuilding").text(elemData.name);
     box.find(".descriptionofbuilding").text(elemData.vicinity);
 
     if(typeof elemData.photos != "undefined" && elemData.photos.length != 0){
-        box.find("img").attr("src",elemData.photos[0].getUrl({'maxWidth': 250, 'maxHeight': 250}));
+        box.find(".imatge").css("background-image","url("+elemData.photos[0].getUrl({'maxWidth': 250, 'maxHeight': 250})+")");
     }
 
     box.show();
     return box;
+}
+
+function fixWidth(box){
+
+    var width = box.find(".imatge").width();
+    console.log(width);
+
+    box.find(".boxed").css("height",width+"px");
+    box.find(".imatge").css("height", width+"px"); 
+
 }

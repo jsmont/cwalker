@@ -7,7 +7,7 @@ var event_marker;
 var form = {
     radius: 1000,
     location:{},
-    types: ['amusement_park', 'aquarium', 'art_gallery', 'bar', 'cafe', 'casino', 'cemetery', 'church', 'city_hall', 'hindu_temple', 'museum', 'night_club', 'park', 'place_of_worship', 'rv_park', 'spa', 'stadium', 'synagogue', 'train_station', 'university', 'zoo']
+    types: [ 'park', 'amusement_park', 'aquarium', 'art_gallery', 'bar', 'cafe', 'casino', 'cemetery', 'church', 'city_hall', 'hindu_temple', 'museum', 'night_club','place_of_worship', 'rv_park', 'spa', 'stadium', 'synagogue', 'train_station', 'university', 'zoo']
 };
 
 
@@ -84,10 +84,14 @@ function googleRequest(cb){
 }
 
 function updateList(results){
-    results.map(createBox).map(function(box){
-        $("#list").append(box);
-        return box;
-    }).map(fixWidth);
+    results
+        .map(createBox)
+        .map(function(box){
+            $("#list").append(box);
+            return box;
+        })
+        .map(fixWidth)
+        .map(setBoxEvents);
 }
 
 function createBox(elemData){
@@ -113,3 +117,10 @@ function fixWidth(box){
     box.find(".imatge").css("height", width+"px"); 
 
 }
+
+function setBoxEvents(box){
+
+
+    //TODO: Add box events (onclick, etc)
+
+};

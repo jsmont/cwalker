@@ -88,3 +88,11 @@ box-shadow: 6px 6px 42px -5px rgba(0,0,0,0.52);
     font-size: 12px;
     text-align: justify;
 }
+
+.boxcontainer.selected {
+    padding: 23px;
+}
+
+.boxcontainer.selected .boxed {
+    border: 2px solid blue;
+}

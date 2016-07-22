@@ -114,13 +114,15 @@ function fixWidth(box){
     console.log(width);
 
     box.find(".boxed").css("height",width+"px");
-    box.find(".imatge").css("height", width+"px"); 
+    box.find(".imatge").css("height", width+"px");
+
+    return box;
 
 }
 
 function setBoxEvents(box){
-
-
-    //TODO: Add box events (onclick, etc)
+box.click(function(){
+    box.toggleClass("selected");
+}); 
 
 };

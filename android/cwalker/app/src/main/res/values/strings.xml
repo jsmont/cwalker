@@ -2,4 +2,8 @@
     <string name="app_name">CWalker</string>
     <string name="title_activity_base">CWalker</string>
     <string name="radius_message">Radius distance</string>
+    <string name="go">Go</string>
+    <string name="google_places_key">AIzaSyA5MPiWRvthVJ8UTURj0eIm0s4eisFlD-s</string>
+    <string name="places_types">park_or_amusement_park_or_aquarium_or_art_gallery_or_bar_or_cafe_or_casino_or_cemetery_or_church_or_city_hall_or_hindu_temple_or_museum_or_night_club_or_place_of_worship_or_rv_park_or_spa_or_stadium_or_synagogue_or_train_station_or_university_or_zoo</string>
+    <string name="title_activity_maps">Map</string>
 </resources>

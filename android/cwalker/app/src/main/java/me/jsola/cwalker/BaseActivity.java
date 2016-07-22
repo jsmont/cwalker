@@ -1,6 +1,8 @@
 package me.jsola.cwalker;
 
+import android.app.ListActivity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Criteria;
@@ -8,10 +10,14 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.location.LocationListener;
+import android.os.AsyncTask;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.util.FloatMath;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -30,6 +36,19 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class BaseActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -46,6 +65,7 @@ public class BaseActivity extends FragmentActivity implements OnMapReadyCallback
 
     private SeekBar radiusSelector;
     private TextView radiusDisplayer;
+    private Button goButton;
 
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -88,6 +108,17 @@ public class BaseActivity extends FragmentActivity implements OnMapReadyCallback
                         updateCircleRadius();
                     }
                 });
+
+        goButton = (Button) findViewById(R.id.go_button);
+        goButton.setOnClickListener(new Button.OnClickListener() {
+            public void onClick(View v) {
+                new GetNearbyPlaces().execute(new Float[]{
+                    radiusSelector.getProgress() + MIN_RADIUS,
+                        Float.valueOf((float)(myLocation.getLatitude())),
+                        Float.valueOf((float)(myLocation.getLongitude()))
+                });
+            }
+        });
 
 
     }
@@ -158,6 +189,7 @@ public class BaseActivity extends FragmentActivity implements OnMapReadyCallback
 
         Location InitialLocation = myLocationManager.getLastKnownLocation(locationProvider);
 
+        myLocation = InitialLocation;
         setUpInitialMarker(InitialLocation);
     }
 
@@ -172,11 +204,13 @@ public class BaseActivity extends FragmentActivity implements OnMapReadyCallback
 
         myCircle = mMap.addCircle(new CircleOptions()
                 .center(myLaLn)
-                .radius(myRadius)
+                .radius(500)
                 .fillColor(Color.argb(35, 0, 50, 240))
                 .strokeColor(Color.argb(80, 0, 50, 240))
                 .strokeWidth(2)
                 .zIndex(1));
+
+        updateCircleRadius();
 
         CameraPosition camPos = new CameraPosition.Builder().target(myLaLn)
                 .zoom(14).bearing(0).tilt(0).build();
@@ -190,6 +224,8 @@ public class BaseActivity extends FragmentActivity implements OnMapReadyCallback
     public void setNewLocation(Location CurrentLocation) {
         LatLng newLatLng = new LatLng(CurrentLocation.getLatitude(),
                 CurrentLocation.getLongitude());
+
+        myLocation = CurrentLocation;
 
         updateMarker(newLatLng);
         updateCircle(newLatLng);
@@ -235,7 +271,6 @@ public class BaseActivity extends FragmentActivity implements OnMapReadyCallback
         );
         AppIndex.AppIndexApi.start(client, viewAction);
 
-        myRadius = Float.valueOf(1000);
     }
 
     @Override
@@ -260,5 +295,89 @@ public class BaseActivity extends FragmentActivity implements OnMapReadyCallback
         );
         AppIndex.AppIndexApi.end(client, viewAction);
         client.disconnect();
+    }
+
+    private class GetNearbyPlaces extends AsyncTask<Float, Void, String> {
+
+        HttpURLConnection urlConnection = null;
+
+        @Override
+        protected String doInBackground(Float... params) {
+            // params comes from the execute() call: params[0] is the url.
+            try {
+                final String BASE_URL = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?";
+                final Float radius = params[0];
+                final Float Lat = params[1];
+                final Float Lng = params[2];
+
+                Log.v("URL", BASE_URL +
+                    "key="+ R.string.google_places_key +
+                    "&location="+Lat + "," + Lng +
+                    "&radius=" + radius +
+                    "&types="+R.string.places_types);
+
+                URL url = new URL(BASE_URL +
+                        "key=AIzaSyA5MPiWRvthVJ8UTURj0eIm0s4eisFlD-s"+
+                        "&location="+Lat + "," + Lng +
+                        "&radius=" + radius +"&types="+R.string.places_types);
+
+                urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setRequestMethod("GET");
+                Log.v("RESPONSE", urlConnection.getRequestMethod());
+                /*urlConnection.setRequestProperty("key","AIzaSyA5MPiWRvthVJ8UTURj0eIm0s4eisFlD-s");
+                urlConnection.setRequestProperty("location",""+ Lat + "," + Lng);
+                urlConnection.setRequestProperty("radius",radius.toString());*/
+                urlConnection.connect();
+                Log.v("TESPONSE", urlConnection.getResponseCode()+"");
+
+            } catch (IOException e) {
+                return "Unable to retrieve web page. URL may be invalid.";
+            }
+            return readInputStreamToString(urlConnection);
+        }
+
+        // onPostExecute displays the results of the AsyncTask.
+        @Override
+        protected void onPostExecute(String result) {
+            Log.v("Get Near Places", "Query executed");
+            Log.v("Get Near Places", result);
+
+            Intent myIntent = new Intent(BaseActivity.this, PlaceListActivity.class);
+            myIntent.putExtra("PlacesDetected", result);
+            BaseActivity.this.startActivity(myIntent);
+
+        }
+    }
+
+    private String readInputStreamToString(HttpURLConnection connection) {
+        String result = null;
+        StringBuffer sb = new StringBuffer();
+        InputStream is = null;
+
+        try {
+            is = new BufferedInputStream(connection.getInputStream());
+            BufferedReader br = new BufferedReader(new InputStreamReader(is));
+            String inputLine = "";
+            while ((inputLine = br.readLine()) != null) {
+                sb.append(inputLine);
+            }
+            result = sb.toString();
+        }
+        catch (Exception e) {
+            Log.i("LOLOL", "Error reading InputStream");
+            result = null;
+        }
+        finally {
+            if (is != null) {
+                try {
+                    is.close();
+                }
+                catch (IOException e) {
+                    Log.i("LOLOL", "Error closing InputStream");
+                }
+            }
+        }
+
+        return result;
     }
 }

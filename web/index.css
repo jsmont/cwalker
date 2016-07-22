@@ -30,12 +30,14 @@ nav{
 }
 
 #goButton{
-    display:scroll;
+    display: none;
     position:fixed;
     bottom:20px;
     right:20px;
+    font-size: 20px;
     margin-bottom:10px;
     margin-right:10px;
+    z-index: 10;
 }
 
 /* Slider */

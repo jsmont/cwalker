@@ -7,7 +7,7 @@ var event_marker;
 var form = {
     radius: 1000,
     location:{},
-    types: [ 'park', 'amusement_park', 'aquarium', 'art_gallery', 'bar', 'cafe', 'casino', 'cemetery', 'church', 'city_hall', 'hindu_temple', 'museum', 'night_club','place_of_worship', 'rv_park', 'spa', 'stadium', 'synagogue', 'train_station', 'university', 'zoo']
+    types: [ 'park', 'amusement_park', 'aquarium', 'art_gallery', 'cemetery', 'church', 'city_hall', 'museum', 'place_of_worship', 'rv_park',  'stadium', 'synagogue', 'train_station', 'university', 'zoo']
 };
 
 
@@ -68,6 +68,7 @@ function initButtons(){
 
 function resetList(){
     $("#list").html("");
+    $("#goButton").hide();
 }
 
 function fetchAndUpdateList(){
@@ -121,8 +122,12 @@ function fixWidth(box){
 }
 
 function setBoxEvents(box){
-box.click(function(){
-    $(this).toggleClass("selected");
-}); 
-
+    box.click(function(){
+        $(this).toggleClass("selected");
+        if($(".boxedcontainer.selected").length != 0){
+            $("#goButton").show();
+        } else {
+            $("#goButton").hide();
+        }
+    }); 
 };

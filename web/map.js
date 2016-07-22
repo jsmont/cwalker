@@ -12,3 +12,4 @@ function initMap() {
     });
     placesService = new google.maps.places.PlacesService(map);
 };
+

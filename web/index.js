@@ -1,36 +1,37 @@
-const GOOGLE_API_KEY = "AIzaSyA5MPiWRvthVJ8UTURj0eIm0s4eisFlD-s"
+const GOOGLE_API_KEY = "AIzaSyA5MPiWRvthVJ8UTURj0eIm0s4eisFlD-s";
+
+var map;
+var placesService;
+var event_marker;
+
+var form = {
+    radius: 1000,
+    location:{},
+    types: ['amusement_park', 'aquarium', 'art_gallery', 'bar', 'cafe', 'casino', 'cemetery', 'church', 'city_hall', 'hindu_temple', 'museum', 'night_club', 'park', 'place_of_worship', 'rv_park', 'spa', 'stadium', 'synagogue', 'train_station', 'university', 'zoo']
+};
+
 
 $(document).ready(function(){
     initSlider();
-
-    initList();
+    initButtons();
 });
 
 
 function initSlider() {
   $("#range").slider({
     range: "min",
-    min: 0,
-    max: 100,
-    value: 50,
+    min: 500,
+    max: 10000,
+    value: 1000,
     slide: function(e, ui) {
-      return $(".ui-slider-handle").html(ui.value);
+        form.radius = ui.value;
+        return $(".ui-slider-handle").html(ui.value + " m");
     }
   });
 
-  $(".ui-slider-handle").html("50");
+  $(".ui-slider-handle").html("1000 m");
 
 }
-
-<<<<<<< Updated upstream
-var map;
-var event_marker;
-
-var form = {
-    assistants:[],
-    location:{}
-};
-
 function initMap() {
     var mapDiv = document.getElementById('map');
     map = new google.maps.Map(mapDiv, {
@@ -39,10 +40,11 @@ function initMap() {
     });
 
     google.maps.event.addListener(map, 'click', function(event) {
+       $("#buttonDiv").slideDown();
        placeMarker(event.latLng);
-       form.location.lat = event.latLng.lat();
-       form.location.lon = event.latLng.lng();
+       form.location = event.latLng;
     });
+    placesService = new google.maps.places.PlacesService(map);
 }
 
 function placeMarker(location) {
@@ -55,16 +57,49 @@ function placeMarker(location) {
         event_marker.setPosition(location);
     }
 }
-=======
-function initList(){
+
+function initButtons(){
+    $("#searchButton").click(function(){
+
+        resetList();
+        fetchAndUpdateList();
+    });
+}
+
+function resetList(){
+    $("#list").html("");
+}
+
+function fetchAndUpdateList(){
     googleRequest(function(googleResuts){
-        
+        updateList(googleResuts);
     });
 }
 
 
 function googleRequest(cb){
-    var service = new google.maps.places.PlacesService(map);
-    service.nearbySearch(request, callback);
+
+    var request = form; 
+    placesService.nearbySearch(request, cb);
 }
->>>>>>> Stashed changes
+
+function updateList(results){
+    results.map(createBox).map(function(box){
+        $("#list").append(box);
+    });
+}
+
+function createBox(elemData){
+
+    var box = $("#box_template .boxedcontainer").first().clone();
+
+    box.find(".nameofbuilding").text(elemData.name);
+    box.find(".descriptionofbuilding").text(elemData.vicinity);
+
+    if(typeof elemData.photos != "undefined" && elemData.photos.length != 0){
+        box.find("img").attr("src",elemData.photos[0].getUrl({'maxWidth': 250, 'maxHeight': 250}));
+    }
+
+    box.show();
+    return box;
+}

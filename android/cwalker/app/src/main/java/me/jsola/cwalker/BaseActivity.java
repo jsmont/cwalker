@@ -2,6 +2,7 @@ package me.jsola.cwalker;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
@@ -11,6 +12,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.SeekBar;
+import android.widget.TextView;
 
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
@@ -21,17 +24,29 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+
 public class BaseActivity extends FragmentActivity implements OnMapReadyCallback {
 
+
+    private final float MIN_RADIUS = 500;
     private GoogleMap mMap;
     private LocationManager myLocationManager;
     private LocationListener myLocationListener;
     private Location myLocation;
     private Marker myLocationMarker;
+    private Circle myCircle;
+    private Float myRadius ;
+
+
+    private SeekBar radiusSelector;
+    private TextView radiusDisplayer;
+
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -49,8 +64,42 @@ public class BaseActivity extends FragmentActivity implements OnMapReadyCallback
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+
+        radiusSelector = (SeekBar) findViewById(R.id.radius_selector);
+        radiusDisplayer = (TextView) findViewById(R.id.radius_value);
+
+        setRadiusDisplay(radiusSelector.getProgress());
+
+        radiusSelector.setOnSeekBarChangeListener(
+                new SeekBar.OnSeekBarChangeListener() {
+                    @Override
+                    public void onProgressChanged(SeekBar seekBar,
+                                                  int progresValue, boolean fromUser) {
+                        setRadiusDisplay(progresValue);
+                    }
+
+                    @Override
+                    public void onStartTrackingTouch(SeekBar seekBar) {
+
+                    }
+
+                    @Override
+                    public void onStopTrackingTouch(SeekBar seekBar) {
+                        updateCircleRadius();
+                    }
+                });
+
+
     }
 
+
+    public void setRadiusDisplay(int progress){
+        radiusDisplayer.setText((int)(radiusSelector.getProgress() + MIN_RADIUS) + " m");
+    }
+
+    public void updateCircleRadius(){
+        myCircle.setRadius((double)(radiusSelector.getProgress() + MIN_RADIUS));
+    }
 
     /**
      * Manipulates the map once available.
@@ -110,7 +159,6 @@ public class BaseActivity extends FragmentActivity implements OnMapReadyCallback
         Location InitialLocation = myLocationManager.getLastKnownLocation(locationProvider);
 
         setUpInitialMarker(InitialLocation);
-        setNewLocation(InitialLocation);
     }
 
     public void setUpInitialMarker(Location InitiaLocation){
@@ -122,6 +170,21 @@ public class BaseActivity extends FragmentActivity implements OnMapReadyCallback
                 "my Location");
         myLocationMarker = mMap.addMarker(markerOpts);
 
+        myCircle = mMap.addCircle(new CircleOptions()
+                .center(myLaLn)
+                .radius(myRadius)
+                .fillColor(Color.argb(35, 0, 50, 240))
+                .strokeColor(Color.argb(80, 0, 50, 240))
+                .strokeWidth(2)
+                .zIndex(1));
+
+        CameraPosition camPos = new CameraPosition.Builder().target(myLaLn)
+                .zoom(14).bearing(0).tilt(0).build();
+
+        CameraUpdate camUpd3 = CameraUpdateFactory.newCameraPosition(camPos);
+        mMap.animateCamera(camUpd3);
+
+
     }
 
     public void setNewLocation(Location CurrentLocation) {
@@ -129,6 +192,7 @@ public class BaseActivity extends FragmentActivity implements OnMapReadyCallback
                 CurrentLocation.getLongitude());
 
         updateMarker(newLatLng);
+        updateCircle(newLatLng);
         updateCamera(newLatLng);
 
         Log.d("Location Tracking", "New Location\tLatitude: "+CurrentLocation.getLatitude() + "\tLongitude: "+CurrentLocation.getLongitude());
@@ -139,9 +203,13 @@ public class BaseActivity extends FragmentActivity implements OnMapReadyCallback
         myLocationMarker.setPosition(newLatLng);
     }
 
+    public void updateCircle(LatLng newLatLng){
+        myCircle.setCenter(newLatLng);
+    }
+
     public void updateCamera(LatLng newLatLng){
         CameraPosition camPos = new CameraPosition.Builder().target(newLatLng)
-                .zoom(18).bearing(0).tilt(0).build();
+                .zoom(mMap.getCameraPosition().zoom).bearing(0).tilt(0).build();
 
         CameraUpdate camUpd3 = CameraUpdateFactory.newCameraPosition(camPos);
         mMap.animateCamera(camUpd3);
@@ -166,6 +234,8 @@ public class BaseActivity extends FragmentActivity implements OnMapReadyCallback
                 Uri.parse("android-app://me.jsola.cwalker/http/host/path")
         );
         AppIndex.AppIndexApi.start(client, viewAction);
+
+        myRadius = Float.valueOf(1000);
     }
 
     @Override

@@ -186,11 +186,10 @@ public class BaseActivity extends FragmentActivity implements OnMapReadyCallback
     public void setUpInitialLocation(){
         String locationProvider = LocationManager.NETWORK_PROVIDER;
 
-
         Location InitialLocation = myLocationManager.getLastKnownLocation(locationProvider);
 
         myLocation = InitialLocation;
-        setUpInitialMarker(InitialLocation);
+        if(InitialLocation != null)setUpInitialMarker(InitialLocation);
     }
 
     public void setUpInitialMarker(Location InitiaLocation){

@@ -45,6 +45,7 @@ public class PlaceListActivity extends Activity {
     private List<Place> totalPlaces;
     private List<Place> selectedPlaces;
     Drawable background;
+    Button goButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,6 +106,12 @@ public class PlaceListActivity extends Activity {
                     selectedPlaces.add(item);
                 }
 
+                if(selectedPlaces.size() > 0){
+                    goButton.setVisibility(Button.VISIBLE);
+                } else {
+                    goButton.setVisibility(Button.GONE);
+                }
+
 
 
 
@@ -112,7 +119,7 @@ public class PlaceListActivity extends Activity {
 
         });
 
-        Button goButton = (Button) findViewById(R.id.go_button);
+        goButton = (Button) findViewById(R.id.go_button);
         goButton.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
 
